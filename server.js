@@ -611,52 +611,54 @@ const autorunUrl = new URL(
     (':' + server_port),
 );
 
-const setupTasks = async function () {
-    const version = await getVersion();
+// const setupTasks = async function () {
+//     const version = await getVersion();
 
-    console.log(`SillyTavern ${version.pkgVersion}` + (version.gitBranch ? ` '${version.gitBranch}' (${version.gitRevision})` : ''));
+//     console.log(`SillyTavern ${version.pkgVersion}` + (version.gitBranch ? ` '${version.gitBranch}' (${version.gitRevision})` : ''));
 
-    // TODO: do endpoint init functions depend on certain directories existing or not existing? They should be callable
-    // in any order for encapsulation reasons, but right now it's unknown if that would break anything.
-    await settingsEndpoint.init();
-    ensurePublicDirectoriesExist();
-    await ensureThumbnailCache();
-    contentManager.checkForNewContent();
-    cleanUploads();
+//     // TODO: do endpoint init functions depend on certain directories existing or not existing? They should be callable
+//     // in any order for encapsulation reasons, but right now it's unknown if that would break anything.
+//     await settingsEndpoint.init();
+//     ensurePublicDirectoriesExist();
+//     await ensureThumbnailCache();
+//     contentManager.checkForNewContent();
+//     cleanUploads();
 
-    await loadTokenizers();
-    await statsEndpoint.init();
+//     await loadTokenizers();
+//     await statsEndpoint.init();
 
-    const cleanupPlugins = await loadPlugins();
+//     const cleanupPlugins = await loadPlugins();
 
-    const exitProcess = async () => {
-        statsEndpoint.onExit();
-        if (typeof cleanupPlugins === 'function') {
-            await cleanupPlugins();
-        }
-        process.exit();
-    };
+//     const exitProcess = async () => {
+//         statsEndpoint.onExit();
+//         if (typeof cleanupPlugins === 'function') {
+//             await cleanupPlugins();
+//         }
+//         process.exit();
+//     };
 
-    // Set up event listeners for a graceful shutdown
-    process.on('SIGINT', exitProcess);
-    process.on('SIGTERM', exitProcess);
-    process.on('uncaughtException', (err) => {
-        console.error('Uncaught exception:', err);
-        exitProcess();
-    });
+//     // Set up event listeners for a graceful shutdown
+//     process.on('SIGINT', exitProcess);
+//     process.on('SIGTERM', exitProcess);
+//     process.on('uncaughtException', (err) => {
+//         console.error('Uncaught exception:', err);
+//         exitProcess();
+//     });
 
 
-    console.log('Launching...');
+//     console.log('Launching...');
 
-    if (autorun) open(autorunUrl.toString());
+//     if (autorun) open(autorunUrl.toString());
 
-    console.log(color.green('SillyTavern is listening on: ' + tavernUrl));
+//     console.log(color.green('SillyTavern is listening on: ' + tavernUrl));
 
-    if (listen) {
-        console.log('\n0.0.0.0 means SillyTavern is listening on all network interfaces (Wi-Fi, LAN, localhost). If you want to limit it only to internal localhost (127.0.0.1), change the setting in config.yaml to "listen: false". Check "access.log" file in the SillyTavern directory if you want to inspect incoming connections.\n');
-    }
-};
-
+//     if (listen) {
+//         console.log('\n0.0.0.0 means SillyTavern is listening on all network interfaces (Wi-Fi, LAN, localhost). If you want to limit it only to internal localhost (127.0.0.1), change the setting in config.yaml to "listen: false". Check "access.log" file in the SillyTavern directory if you want to inspect incoming connections.\n');
+//     }
+// };
+app.listen(server_port, () => { 
+    console.log('SillyTavern is listening on: port'+ server_port);
+});
 /**
  * Loads server plugins from a directory.
  * @returns {Promise<Function>} Function to be run on server exit
