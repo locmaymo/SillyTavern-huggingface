@@ -17,7 +17,7 @@ basicAuthUser:
 # Enables CORS proxy middleware
 enableCorsProxy: false
 # Disable security checks - NOT RECOMMENDED
-securityOverride: true
+securityOverride: false
 # -- ADVANCED CONFIGURATION --
 # Open the browser automatically
 autorun: false

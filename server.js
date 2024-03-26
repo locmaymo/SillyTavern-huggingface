@@ -98,13 +98,65 @@ const serverDirectory = __dirname;
 process.chdir(serverDirectory);
 
 const app = express();
+let defautlPassword = "loc";
+
+app.use(express.json());
+
+app.post('/login', (req, res) => {
+    const { password } = req.body;
+
+    if (defautlPassword === password) {
+        res.json({ success: true });
+    } else {
+        res.status(400).end();
+    }
+});
+
+app.post('/change-password', (req, res) => {
+    const { oldPassword, newPassword } = req.body;
+
+    if (defautlPassword === oldPassword) {
+        defautlPassword = newPassword;
+        res.json({ success: true });
+    } else {
+        res.status(400).end();
+    }
+});
+
+const spaceLink = getExternalUrl(process.env.SPACE_ID);
+
+// lấy thông tin link space
+function getExternalUrl(spaceId) {
+    try {
+        const [username, spacename] = spaceId.split("/");
+        return `https://${username}-${spacename}.hf.space`;
+    } catch (e) {
+        return "";
+    }
+}
+
+// // sefl ping
+// const smallOperation = async () => {
+//     const request = await fetch(spaceLink);
+//     console.log(`self ping result for ${spaceLink}`, request.status);
+//     return request;
+// };
+
+// smallOperation();
+
+// // ping every 1 hour
+// setInterval(() => {
+//     smallOperation();
+// }, 3600000);
+
 app.use(compression());
 app.use(responseTime());
 
 const server_port = process.env.SILLY_TAVERN_PORT || getConfigValue('port', 8000);
+const port = 7860;
 
 const autorun = (getConfigValue('autorun', false) || cliArguments.autorun) && !cliArguments.ssl;
-// const listen = getConfigValue('listen', false);
+const listen = getConfigValue('listen', false);
 
 const { DIRECTORIES, UPLOADS_PATH, AVATAR_WIDTH, AVATAR_HEIGHT } = require('./src/constants');
 
@@ -116,10 +168,93 @@ const CORS = cors({
 
 app.use(CORS);
 
-// if (listen && getConfigValue('basicAuthMode', false)) app.use(basicAuthMiddleware);
+if (listen && getConfigValue('basicAuthMode', false)) app.use(basicAuthMiddleware);
 
 app.use(whitelistMiddleware);
 
+// backup từ người dùng
+const admZip = require('adm-zip');
+// Serve static files in public folder
+app.use(express.static('public'));
+
+// Upload middleware
+const upload = multer({ storage: multer.memoryStorage() });
+
+// GET backup API  
+app.get('/backup', (req, res) => {
+    const zip = new admZip();
+
+    // Lấy đường dẫn tới thư mục public
+    const publicDir = `${__dirname}/public`;
+
+    // Thêm thư mục public,
+    zip.addLocalFolder(publicDir);
+
+    zip.deleteFile('index.html');
+    zip.deleteFile('style.css');
+    zip.deleteFile('i18n.json');
+    zip.deleteFile('context');
+    zip.deleteFile('robots.txt');
+
+    const entries = zip.getEntries();
+
+    // Lọc ra entry của thư mục cần xóa và các entry con
+    const folderToDelete = entries.filter(entry => {
+        return (
+            entry.entryName.startsWith('context') ||
+            entry.entryName.startsWith('css') ||
+            entry.entryName.startsWith('instruct') ||
+            entry.entryName.startsWith('KoboldAI Settings') ||
+            entry.entryName.startsWith('lib') ||
+            entry.entryName.startsWith('movingUI') ||
+            entry.entryName.startsWith('NovelAI Settings') ||
+            entry.entryName.startsWith('OpenAI Settings') ||
+            entry.entryName.startsWith('QuickReplies') ||
+            entry.entryName.startsWith('scripts') ||
+            entry.entryName.startsWith('sounds') ||
+            entry.entryName.startsWith('TextGen Settings') ||
+            entry.entryName.startsWith('webfonts')
+        );
+    });
+
+    // Xóa từng entry
+    folderToDelete.forEach(entry => {
+        zip.deleteFile(entry);
+    });
+
+    // Lấy dữ liệu đã zip
+    const buffer = zip.toBuffer();
+
+    // Phần gửi zip to client...
+
+    // Format ngày tháng theo định dạng mong muốn  
+    const now = new Date();
+    const dateString = now.getDate() + '-' + (now.getMonth() + 1) + '-' + now.getFullYear();
+    res.set('Content-Type', 'application/zip');
+    res.set('Content-Disposition', `attachment; filename=backup-${dateString}.zip`);
+
+    res.send(buffer);
+
+
+});
+
+// POST restore API
+app.post('/restore', upload.single('backup'), (req, res) => {
+    const zip = new admZip(req.file.buffer);
+
+    // Lấy đường dẫn tới thư mục public
+    const publicDir = `${__dirname}/public`;
+
+    // Giải nén zip  
+    zip.extractAllTo(publicDir, true, true);
+
+    res.redirect('/');
+});
+
+// Serve index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 // CSRF Protection //
 if (!cliArguments.disableCsrf) {
     const CSRF_SECRET = crypto.randomBytes(8).toString('hex');
@@ -599,66 +734,64 @@ app.use('/api/backends/scale-alt', require('./src/endpoints/backends/scale-alt')
 // Speech (text-to-speech and speech-to-text)
 app.use('/api/speech', require('./src/endpoints/speech').router);
 
-// const tavernUrl = new URL(
-//     (cliArguments.ssl ? 'https://' : 'http://') +
-//     (listen ? '0.0.0.0' : '127.0.0.1') +
-//     (':' + server_port),
-// );
+const tavernUrl = new URL(
+    (cliArguments.ssl ? 'https://' : 'http://') +
+    (listen ? '0.0.0.0' : '127.0.0.1') +
+    (':' + server_port),
+);
 
-// const autorunUrl = new URL(
-//     (cliArguments.ssl ? 'https://' : 'http://') +
-//     ('127.0.0.1') +
-//     (':' + server_port),
-// );
+const autorunUrl = new URL(
+    (cliArguments.ssl ? 'https://' : 'http://') +
+    ('127.0.0.1') +
+    (':' + server_port),
+);
 
-// const setupTasks = async function () {
-//     const version = await getVersion();
+const setupTasks = async function () {
+    const version = await getVersion();
 
-//     console.log(`SillyTavern ${version.pkgVersion}` + (version.gitBranch ? ` '${version.gitBranch}' (${version.gitRevision})` : ''));
+    console.log(`SillyTavern ${version.pkgVersion}` + (version.gitBranch ? ` '${version.gitBranch}' (${version.gitRevision})` : ''));
 
-//     // TODO: do endpoint init functions depend on certain directories existing or not existing? They should be callable
-//     // in any order for encapsulation reasons, but right now it's unknown if that would break anything.
-//     await settingsEndpoint.init();
-//     ensurePublicDirectoriesExist();
-//     await ensureThumbnailCache();
-//     contentManager.checkForNewContent();
-//     cleanUploads();
+    // TODO: do endpoint init functions depend on certain directories existing or not existing? They should be callable
+    // in any order for encapsulation reasons, but right now it's unknown if that would break anything.
+    await settingsEndpoint.init();
+    ensurePublicDirectoriesExist();
+    await ensureThumbnailCache();
+    contentManager.checkForNewContent();
+    cleanUploads();
 
-//     await loadTokenizers();
-//     await statsEndpoint.init();
+    await loadTokenizers();
+    await statsEndpoint.init();
 
-//     const cleanupPlugins = await loadPlugins();
+    const cleanupPlugins = await loadPlugins();
 
-//     const exitProcess = async () => {
-//         statsEndpoint.onExit();
-//         if (typeof cleanupPlugins === 'function') {
-//             await cleanupPlugins();
-//         }
-//         process.exit();
-//     };
+    const exitProcess = async () => {
+        statsEndpoint.onExit();
+        if (typeof cleanupPlugins === 'function') {
+            await cleanupPlugins();
+        }
+        process.exit();
+    };
 
-//     // Set up event listeners for a graceful shutdown
-//     process.on('SIGINT', exitProcess);
-//     process.on('SIGTERM', exitProcess);
-//     process.on('uncaughtException', (err) => {
-//         console.error('Uncaught exception:', err);
-//         exitProcess();
-//     });
+    // Set up event listeners for a graceful shutdown
+    process.on('SIGINT', exitProcess);
+    process.on('SIGTERM', exitProcess);
+    process.on('uncaughtException', (err) => {
+        console.error('Uncaught exception:', err);
+        exitProcess();
+    });
 
 
-//     console.log('Launching...');
+    console.log('Launching...');
 
-//     if (autorun) open(autorunUrl.toString());
+    if (autorun) open(autorunUrl.toString());
 
-//     console.log(color.green('SillyTavern is listening on: ' + tavernUrl));
+    console.log(color.green('SillyTavern is listening on: ' + tavernUrl));
 
-//     if (listen) {
-//         console.log('\n0.0.0.0 means SillyTavern is listening on all network interfaces (Wi-Fi, LAN, localhost). If you want to limit it only to internal localhost (127.0.0.1), change the setting in config.yaml to "listen: false". Check "access.log" file in the SillyTavern directory if you want to inspect incoming connections.\n');
-//     }
-// };
-app.listen(server_port, () => { 
-    console.log('SillyTavern is listening on: port'+ server_port);
-});
+    if (listen) {
+        console.log('\n0.0.0.0 means SillyTavern is listening on all network interfaces (Wi-Fi, LAN, localhost). If you want to limit it only to internal localhost (127.0.0.1), change the setting in config.yaml to "listen: false". Check "access.log" file in the SillyTavern directory if you want to inspect incoming connections.\n');
+    }
+};
+
 /**
  * Loads server plugins from a directory.
  * @returns {Promise<Function>} Function to be run on server exit
@@ -675,32 +808,34 @@ async function loadPlugins() {
     }
 }
 
-// if (listen && !getConfigValue('whitelistMode', true) && !getConfigValue('basicAuthMode', false)) {
-//     if (getConfigValue('securityOverride', false)) {
-//         console.warn(color.red('Security has been overridden. If it\'s not a trusted network, change the settings.'));
-//     }
-//     else {
-//         console.error(color.red('Your SillyTavern is currently unsecurely open to the public. Enable whitelisting or basic authentication.'));
-//         process.exit(1);
-//     }
-// }
+if (listen && !getConfigValue('whitelistMode', true) && !getConfigValue('basicAuthMode', false)) {
+    if (getConfigValue('securityOverride', false)) {
+        console.warn(color.red('Security has been overridden. If it\'s not a trusted network, change the settings.'));
+    }
+    else {
+        console.error(color.red('Your SillyTavern is currently unsecurely open to the public. Enable whitelisting or basic authentication.'));
+        process.exit(1);
+    }
+}
 
-// if (cliArguments.ssl) {
-//     https.createServer(
-//         {
-//             cert: fs.readFileSync(cliArguments.certPath),
-//             key: fs.readFileSync(cliArguments.keyPath),
-//         }, app)
-//         .listen(
-//             Number(tavernUrl.port) || 443,
-//             tavernUrl.hostname,
-//         );
-// } else {
-//     http.createServer(app).listen(
-//         Number(tavernUrl.port) || 80,
-//         tavernUrl.hostname,
-//     );
-// }
+if (cliArguments.ssl) {
+    https.createServer(
+        {
+            cert: fs.readFileSync(cliArguments.certPath),
+            key: fs.readFileSync(cliArguments.keyPath),
+        }, app)
+        .listen(
+            Number(tavernUrl.port) || 443,
+            tavernUrl.hostname,
+            setupTasks,
+        );
+} else {
+    http.createServer(app).listen(
+        Number(tavernUrl.port) || 80,
+        tavernUrl.hostname,
+        setupTasks,
+    );
+}
 
 function ensurePublicDirectoriesExist() {
     for (const dir of Object.values(DIRECTORIES)) {
