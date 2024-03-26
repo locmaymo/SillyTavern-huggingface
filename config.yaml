@@ -4,7 +4,7 @@ listen: false
 # Server port
 port: 7860
 # Toggle whitelist mode
-whitelistMode: true
+whitelistMode: false
 # Whitelist of allowed IP addresses
 whitelist:
   - 127.0.0.1

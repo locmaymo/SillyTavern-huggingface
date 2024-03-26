@@ -694,13 +694,11 @@ if (cliArguments.ssl) {
         .listen(
             Number(tavernUrl.port) || 443,
             tavernUrl.hostname,
-            setupTasks,
         );
 } else {
     http.createServer(app).listen(
         Number(tavernUrl.port) || 80,
         tavernUrl.hostname,
-        setupTasks,
     );
 }
 
