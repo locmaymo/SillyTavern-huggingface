@@ -734,17 +734,21 @@ app.use('/api/backends/scale-alt', require('./src/endpoints/backends/scale-alt')
 // Speech (text-to-speech and speech-to-text)
 app.use('/api/speech', require('./src/endpoints/speech').router);
 
-const tavernUrl = new URL(
-    (cliArguments.ssl ? 'https://' : 'http://') +
-    (listen ? '0.0.0.0' : '127.0.0.1') +
-    (':' + server_port),
-);
 
-const autorunUrl = new URL(
-    (cliArguments.ssl ? 'https://' : 'http://') +
-    ('127.0.0.1') +
-    (':' + server_port),
-);
+
+// listen on port
+app.listen(port, () => console.info(`Listening on port ${port}`))
+// const tavernUrl = new URL(
+//     (cliArguments.ssl ? 'https://' : 'http://') +
+//     (listen ? '0.0.0.0' : '127.0.0.1') +
+//     (':' + server_port),
+// );
+
+// const autorunUrl = new URL(
+//     (cliArguments.ssl ? 'https://' : 'http://') +
+//     ('127.0.0.1') +
+//     (':' + server_port),
+// );
 
 const setupTasks = async function () {
     const version = await getVersion();
@@ -783,14 +787,20 @@ const setupTasks = async function () {
 
     console.log('Launching...');
 
-    if (autorun) open(autorunUrl.toString());
+    // if (autorun) open(autorunUrl.toString());
 
-    console.log(color.green('SillyTavern is listening on: ' + tavernUrl));
+    // console.log(color.green('SillyTavern is listening on: ' + tavernUrl));
 
-    if (listen) {
-        console.log('\n0.0.0.0 means SillyTavern is listening on all network interfaces (Wi-Fi, LAN, localhost). If you want to limit it only to internal localhost (127.0.0.1), change the setting in config.yaml to "listen: false". Check "access.log" file in the SillyTavern directory if you want to inspect incoming connections.\n');
-    }
+    // if (listen) {
+    //     console.log('\n0.0.0.0 means SillyTavern is listening on all network interfaces (Wi-Fi, LAN, localhost). If you want to limit it only to internal localhost (127.0.0.1), change the setting in config.yaml to "listen: false". Check "access.log" file in the SillyTavern directory if you want to inspect incoming connections.\n');
+    // }
 };
+
+// Set up the server
+setupTasks().catch(err => {
+    console.error(err);
+    process.exit(1);
+});
 
 /**
  * Loads server plugins from a directory.
@@ -818,24 +828,24 @@ if (listen && !getConfigValue('whitelistMode', true) && !getConfigValue('basicAu
     }
 }
 
-if (cliArguments.ssl) {
-    https.createServer(
-        {
-            cert: fs.readFileSync(cliArguments.certPath),
-            key: fs.readFileSync(cliArguments.keyPath),
-        }, app)
-        .listen(
-            Number(tavernUrl.port) || 443,
-            tavernUrl.hostname,
-            setupTasks,
-        );
-} else {
-    http.createServer(app).listen(
-        Number(tavernUrl.port) || 80,
-        tavernUrl.hostname,
-        setupTasks,
-    );
-}
+// if (cliArguments.ssl) {
+//     https.createServer(
+//         {
+//             cert: fs.readFileSync(cliArguments.certPath),
+//             key: fs.readFileSync(cliArguments.keyPath),
+//         }, app)
+//         .listen(
+//             Number(tavernUrl.port) || 443,
+//             tavernUrl.hostname,
+//             setupTasks,
+//         );
+// } else {
+//     http.createServer(app).listen(
+//         Number(tavernUrl.port) || 80,
+//         tavernUrl.hostname,
+//         setupTasks,
+//     );
+// }
 
 function ensurePublicDirectoriesExist() {
     for (const dir of Object.values(DIRECTORIES)) {
