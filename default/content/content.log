@@ -1,0 +1,89 @@
+default_Seraphina.png
+default_CodingSensei.png
+default_FluxTheCat.png
+Seraphina
+Eldoria.json
+user-default.png
+Default_Comfy_Workflow.json
+presets/kobold/Ace of Spades.json
+presets/kobold/Basic Coherence.json
+presets/kobold/Best Guess.json
+presets/kobold/Coherent Creativity.json
+presets/kobold/Deterministic.json
+presets/kobold/Genesis.json
+presets/kobold/Godlike.json
+presets/kobold/Good Winds.json
+presets/kobold/Liminal Drift.json
+presets/kobold/Low Rider.json
+presets/kobold/Luna Moth.json
+presets/kobold/Mayday.json
+presets/kobold/Miro Bronze.json
+presets/kobold/Miro Gold.json
+presets/kobold/Miro Silver.json
+presets/kobold/Ouroboros.json
+presets/kobold/Pleasing Results.json
+presets/kobold/Pro Writer.json
+presets/kobold/RecoveredRuins.json
+presets/kobold/Space Alien.json
+presets/kobold/Storywriter.json
+presets/kobold/TFS-with-Top-A.json
+presets/kobold/Titanic.json
+presets/kobold/Universal-Creative.json
+presets/kobold/Universal-Light.json
+presets/kobold/Universal-Super-Creative.json
+presets/kobold/simple-proxy-for-tavern.json
+presets/novel/Asper-Kayra.json
+presets/novel/Blended-Coffee-Kayra.json
+presets/novel/Blook-Kayra.json
+presets/novel/Carefree-Kayra.json
+presets/novel/CosmicCube-Kayra.json
+presets/novel/Edgewise-Clio.json
+presets/novel/Fresh-Coffee-Clio.json
+presets/novel/Fresh-Coffee-Kayra.json
+presets/novel/Green-Active-Writer-Kayra.json
+presets/novel/Keelback-Clio.json
+presets/novel/Long-Press-Clio.json
+presets/novel/Pilotfish-Kayra.json
+presets/novel/Pro_Writer-Kayra.json
+presets/novel/Stelenes-Kayra.json
+presets/novel/Talker-Chat-Clio.json
+presets/novel/Tea_Time-Kayra.json
+presets/novel/Tesseract-Kayra.json
+presets/novel/Vingt-Un-Clio.json
+presets/novel/Writers-Daemon-Kayra.json
+presets/textgen/Asterism.json
+presets/textgen/Beam Search.json
+presets/textgen/Big O.json
+presets/textgen/Contrastive Search.json
+presets/textgen/Default.json
+presets/textgen/Deterministic.json
+presets/textgen/Divine Intellect.json
+presets/textgen/Kobold (Godlike).json
+presets/textgen/Kobold (Liminal Drift).json
+presets/textgen/LLaMa-Precise.json
+presets/textgen/Midnight Enigma.json
+presets/textgen/Miro Bronze.json
+presets/textgen/Miro Gold.json
+presets/textgen/Miro Silver.json
+presets/textgen/Mirostat.json
+presets/textgen/Naive.json
+presets/textgen/NovelAI (Best Guess).json
+presets/textgen/NovelAI (Decadence).json
+presets/textgen/NovelAI (Genesis).json
+presets/textgen/NovelAI (Lycaenidae).json
+presets/textgen/NovelAI (Ouroboros).json
+presets/textgen/NovelAI (Pleasing Results).json
+presets/textgen/NovelAI (Sphinx Moth).json
+presets/textgen/NovelAI (Storywriter).json
+presets/textgen/Shortwave.json
+presets/textgen/Simple-1.json
+presets/textgen/Space Alien.json
+presets/textgen/StarChat.json
+presets/textgen/TFS-with-Top-A.json
+presets/textgen/Titanic.json
+presets/textgen/Universal-Creative.json
+presets/textgen/Universal-Light.json
+presets/textgen/Universal-Super-Creative.json
+presets/textgen/Yara.json
+presets/textgen/simple-proxy-for-tavern.json
+presets/openai/Default.json
