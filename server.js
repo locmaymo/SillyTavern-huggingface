@@ -104,7 +104,7 @@ app.use(responseTime());
 const server_port = process.env.SILLY_TAVERN_PORT || getConfigValue('port', 8000);
 
 const autorun = (getConfigValue('autorun', false) || cliArguments.autorun) && !cliArguments.ssl;
-const listen = getConfigValue('listen', false);
+// const listen = getConfigValue('listen', false);
 
 const { DIRECTORIES, UPLOADS_PATH, AVATAR_WIDTH, AVATAR_HEIGHT } = require('./src/constants');
 
@@ -116,7 +116,7 @@ const CORS = cors({
 
 app.use(CORS);
 
-if (listen && getConfigValue('basicAuthMode', false)) app.use(basicAuthMiddleware);
+// if (listen && getConfigValue('basicAuthMode', false)) app.use(basicAuthMiddleware);
 
 app.use(whitelistMiddleware);
 
@@ -599,17 +599,17 @@ app.use('/api/backends/scale-alt', require('./src/endpoints/backends/scale-alt')
 // Speech (text-to-speech and speech-to-text)
 app.use('/api/speech', require('./src/endpoints/speech').router);
 
-const tavernUrl = new URL(
-    (cliArguments.ssl ? 'https://' : 'http://') +
-    (listen ? '0.0.0.0' : '127.0.0.1') +
-    (':' + server_port),
-);
+// const tavernUrl = new URL(
+//     (cliArguments.ssl ? 'https://' : 'http://') +
+//     (listen ? '0.0.0.0' : '127.0.0.1') +
+//     (':' + server_port),
+// );
 
-const autorunUrl = new URL(
-    (cliArguments.ssl ? 'https://' : 'http://') +
-    ('127.0.0.1') +
-    (':' + server_port),
-);
+// const autorunUrl = new URL(
+//     (cliArguments.ssl ? 'https://' : 'http://') +
+//     ('127.0.0.1') +
+//     (':' + server_port),
+// );
 
 // const setupTasks = async function () {
 //     const version = await getVersion();
@@ -675,32 +675,32 @@ async function loadPlugins() {
     }
 }
 
-if (listen && !getConfigValue('whitelistMode', true) && !getConfigValue('basicAuthMode', false)) {
-    if (getConfigValue('securityOverride', false)) {
-        console.warn(color.red('Security has been overridden. If it\'s not a trusted network, change the settings.'));
-    }
-    else {
-        console.error(color.red('Your SillyTavern is currently unsecurely open to the public. Enable whitelisting or basic authentication.'));
-        process.exit(1);
-    }
-}
+// if (listen && !getConfigValue('whitelistMode', true) && !getConfigValue('basicAuthMode', false)) {
+//     if (getConfigValue('securityOverride', false)) {
+//         console.warn(color.red('Security has been overridden. If it\'s not a trusted network, change the settings.'));
+//     }
+//     else {
+//         console.error(color.red('Your SillyTavern is currently unsecurely open to the public. Enable whitelisting or basic authentication.'));
+//         process.exit(1);
+//     }
+// }
 
-if (cliArguments.ssl) {
-    https.createServer(
-        {
-            cert: fs.readFileSync(cliArguments.certPath),
-            key: fs.readFileSync(cliArguments.keyPath),
-        }, app)
-        .listen(
-            Number(tavernUrl.port) || 443,
-            tavernUrl.hostname,
-        );
-} else {
-    http.createServer(app).listen(
-        Number(tavernUrl.port) || 80,
-        tavernUrl.hostname,
-    );
-}
+// if (cliArguments.ssl) {
+//     https.createServer(
+//         {
+//             cert: fs.readFileSync(cliArguments.certPath),
+//             key: fs.readFileSync(cliArguments.keyPath),
+//         }, app)
+//         .listen(
+//             Number(tavernUrl.port) || 443,
+//             tavernUrl.hostname,
+//         );
+// } else {
+//     http.createServer(app).listen(
+//         Number(tavernUrl.port) || 80,
+//         tavernUrl.hostname,
+//     );
+// }
 
 function ensurePublicDirectoriesExist() {
     for (const dir of Object.values(DIRECTORIES)) {
