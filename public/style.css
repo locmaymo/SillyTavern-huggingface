@@ -1142,9 +1142,9 @@ select:focus {
     outline: none;
 }
 
-input[type="file"] {
+/* input[type="file"] {
     display: none;
-}
+} */
 
 #right-nav-panel-tabs {
     display: flex;

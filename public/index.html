@@ -89,9 +89,116 @@
     <script type="module" src="scripts/cfg-scale.js"></script>
     <script type="module" src="scripts/chats.js"></script>
     <title>SillyTavern</title>
+    
+    
 </head>
 
 <body class="no-blur">
+    <div id="login-overlay" style=" position: fixed;
+    top: 5;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    ">
+        <div class="form">
+            <div class="page-wrapper">
+                <div class="prompt-container">
+
+                    <h1>Đăng nhập SillyTavern</h1>
+                    <input style="color:black" class="input" type="text" id="password" name="user_password" placeholder="mật khẩu mặc định là: loc">
+                    <button id="login-btn">Đăng nhập</button>
+
+                    <h1>Đổi mật khẩu</h1>
+                    <input style="color:black" class="input" type="text" id="old-password" name="user_password" placeholder="Mật khẩu cũ">
+                    <input style="color:black" class="input" type="text" id="new-password" name="user_password" placeholder="Mật khẩu mới">
+                    <button id="change-password-form">Đổi mật khẩu</button>
+                </div>
+            </div>
+        </div>
+        <script>
+            const loginOverlay = document.getElementById('login-overlay');
+            const loginBtn = document.getElementById('login-btn');
+            const changePasswordForm = document.getElementById('change-password-form');
+    
+            loginBtn.addEventListener('click', () => {
+                const password = document.getElementById('password').value;
+                login(password);
+            });
+    
+            changePasswordForm.addEventListener('click', () => {
+                const oldPassword = document.getElementById('old-password').value;
+                const newPassword = document.getElementById('new-password').value;
+    
+                changePassword(oldPassword, newPassword);
+            });
+    
+            function login(password) {
+                fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        password
+                    })
+                }).then(res => {
+                    if (res.ok) {
+                        return res.json();
+                    } else {
+                        throw new Error('Sai mật khẩu!');
+                    }
+                }).then(data => {
+                    loginOverlay.style.display = 'none';
+                }).catch(err => {
+                    alert(err.message);
+                });
+            }
+    
+            function changePassword(oldPassword, newPassword) {
+                fetch('/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        oldPassword,
+                        newPassword
+                    })
+                }).then(res => {
+                    if (res.ok) {
+                        return res.json();
+                    } else {
+                        throw new Error('Mật Khẩu cũ không đúng!');
+                    }
+                }).then(data => {
+                    alert('Đổi mật khẩu thành công!');
+                }).catch(err => {
+                    alert(err.message);
+                });
+            }
+        </script>
+
+        <!-- <div class="form">
+            <div class="page-wrapper">
+                <div class="prompt-container">
+
+                    <h1>Đổi mật khẩu</h1>
+                    <input type="password" id="old-password" name="user_password" placeholder="Mật khẩu cũ">
+                    <input type="password" id="new-password" name="user_password" placeholder="Mật khẩu mới">
+                    <span class="checkbox-span">
+                        <input type="checkbox" id="checkbox" name="checkbox_checked">
+                        <label for="checkbox">Hiển thị</label>
+                    </span>
+                    <button id="change-password-form">Đổi mật khẩu</button>
+                </div>
+            </div>
+        </div> -->
+    </div>
     <div id="preloader"></div>
     <div id="bg_custom"></div>
     <div id="bg1"></div>
@@ -2621,6 +2728,31 @@
                     </label>
                     <a id="viewSecrets" href="javascript:void(0);"><span data-i18n="View hidden API keys">View hidden API keys</span></a>
                 </div>
+            </div>
+        </div>
+        <div class="drawer">
+            <div class="drawer-toggle drawer-header">
+                <div class="drawer-icon fa-solid fa-download  closedIcon" title="API Connections"
+                    data-i18n="[title]API Connections"></div>
+            </div>
+            <div class="drawer-content closedDrawer">
+
+                <h2>Khôi phục dữ liệu</h2>
+
+                <a class="api_button menu_button menu_button_icon" href="/backup">Tải xuống</a>
+                <br>
+
+
+                <form action="/restore" method="post" enctype="multipart/form-data">
+                    <div class="flex-container flex">
+                        <input type="file" name="backup">
+                        <button style="margin: auto;" class=" menu_button menu_button_icon" type="submit">Khôi
+                            phục</button>
+                    </div>
+                </form>
+
+
+
             </div>
         </div>
         <div id="advanced-formatting-button" class="drawer">
