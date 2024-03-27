@@ -195,6 +195,9 @@ app.get('/backup', (req, res) => {
     zip.deleteFile('i18n.json');
     zip.deleteFile('context');
     zip.deleteFile('robots.txt');
+    zip.deleteFile('jsconfig.json');
+    zip.deleteFile('settings.json');
+    zip.deleteFile('script.js');
 
     const entries = zip.getEntries();
 
@@ -213,7 +216,8 @@ app.get('/backup', (req, res) => {
             entry.entryName.startsWith('scripts') ||
             entry.entryName.startsWith('sounds') ||
             entry.entryName.startsWith('TextGen Settings') ||
-            entry.entryName.startsWith('webfonts')
+            entry.entryName.startsWith('webfonts') ||
+            entry.entryName.startsWith('worldinfo')
         );
     });
 
