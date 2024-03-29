@@ -2714,7 +2714,7 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="drawer">
+        <div class="drawer">
             <div class="drawer-toggle drawer-header">
                 <div class="drawer-icon fa-solid fa-download  closedIcon" title="API Connections"
                     data-i18n="[title]API Connections"></div>
@@ -2738,7 +2738,7 @@
 
 
             </div>
-        </div> -->
+        </div>
         <div id="advanced-formatting-button" class="drawer">
             <div class="drawer-toggle">
                 <div class="drawer-icon fa-solid fa-font  closedIcon" title="AI Response Formatting" data-i18n="[title]AI Response Formatting"></div>
@@ -3340,6 +3340,31 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="drawer">
+            <div class="drawer-toggle drawer-header">
+                <div class="drawer-icon fa-solid fa-download  closedIcon" title="API Connections"
+                    data-i18n="[title]API Connections"></div>
+            </div>
+            <div class="drawer-content closedDrawer">
+
+                <h2>Khôi phục dữ liệu</h2>
+
+                <a class="api_button menu_button menu_button_icon" href="/backup">Tải xuống</a>
+                <br>
+
+
+                <form action="/restore" method="post" enctype="multipart/form-data">
+                    <div class="flex-container flex">
+                        <input type="file" name="backup">
+                        <button style="margin: auto;" class=" menu_button menu_button_icon" type="submit">Khôi
+                            phục</button>
+                    </div>
+                </form>
+
+
+
             </div>
         </div>
         <div id="user-settings-button" class="drawer">
